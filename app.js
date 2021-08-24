@@ -1,45 +1,69 @@
 const express = require("express");
 const app = express();
+app.use(express.json());
 // const data = required("./data");
 
+const songs = [
+  {
+    id: 1,
+    name: "Pink Moon",
+    artist: "Nick Drake",
+  },
+  {
+    id: 2,
+    name: "anotherSongName",
+    artist: "anotherArtist",
+  },
+  {
+    id: 3,
+    name: "SongNumber3",
+    artist: "Artist3",
+  },
+];
+
 app.get("/", (req, res) => {
-  //   res.send("String Hello World!");
-  res.json({ message: "JSON Hi!" });
+  res.send("Welcome to my homepage");
 });
 
-// app.get("/songs", (req, res) => {
-//   songs = [
-//     {
-//       name: "someSongName",
-//       artist: "someSongArtist",
-//     },
-//     {
-//       name: "anotherSongName",
-//       artist: "anotherArtist",
-//     },
-//   ];
-//   res.send();
-// });
+app.get("/songs", (req, res) => {
+  res.send(songs);
+});
 
-// app.post("/", (req, res) => {
-//   console.log(req);
-//   res.send(`Hello, i got a ${req.method}  ${req.body} request`);
-// });
+app.post("/songs", (req, res) => {
+  let newSong = {
+    id: songs.length + 1,
+    name: req.body.name,
+    artist: req.body.artist,
+  };
+  songs.push(newSong);
+  res.status(200).send(newSong);
+});
 
-// app.put("/", (req, res) => {
-//   res.send(`Hello, i got a ${req.method} request`);
-// });
+app.get("/songs/:id", (req, res) => {
+  const id = parseInt(req.params.id);
+  console.log(typeof id);
+  const results = songs.find((song) => song.id === id);
+  res.send(results);
+});
 
-// app.delete("/", (req, res) => {
-//   res.send(`Hello, i got a ${req.method} request`);
-// });
+app.put("/songs/:id", (req, res) => {
+  const id = parseInt(req.params.id);
+  const toBeModifiedSong = songs.find((song) => song.id === id);
+  console.log(req.body);
 
-// app.get("/users/:userId/books/:bookId", (req, res) => {
-//   res.send(req.params);
-// });
+  toBeModifiedSong.name = req.body.name;
+  toBeModifiedSong.artist = req.body.artist;
+  res.send(toBeModifiedSong);
+});
 
-// const server = app.listen(PORT, () => {
-//   console.log(`Server running at http://localhost:${PORT}`);
-// });
+app.delete("/songs/:id", (req, res) => {
+  const id = parseInt(req.params.id);
+  const songToDelete = songs.find((song) => song.id === id);
+
+  const indexToDelete = songs.indexOf(songToDelete);
+  songs.splice(indexToDelete, 1);
+  console.log(songs);
+  res.status(200).send(songToDelete);
+});
 
 module.exports = app;
